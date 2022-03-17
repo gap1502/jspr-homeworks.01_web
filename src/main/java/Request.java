@@ -1,37 +1,71 @@
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 public class Request {
 
-    public static MultiMap getQueryParam(String url) {
-        MultiMap parameter = new MultiValueMap();
-        List<NameValuePair> queryParams;
-        try {
-            queryParams = URLEncodedUtils.parse(new URI(url), "UTF-8");
-            for (NameValuePair param : queryParams) {
-                if (param.getName() != null && param.getValue() != null)
-                    parameter.put(param.getName(), param.getValue());
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return parameter;
+    private String method;
+    private String path;
+    private Map<String, List<String>> queryParams;
+    private List<String> headers;
+    private byte[] body;
+    private final InputStream in;
+
+    public Request(String method, String path, List<String> headers, Map<String,
+            List<String>> queryParams, InputStream in) {
+        this.method = method;
+        this.path = path;
+        this.headers = headers;
+        this.queryParams = queryParams;
+        this.in = in;
     }
 
-    public static String getQueryParams(String url) {
-        String result;
-        int i = url.indexOf("?");
-        if (i == -1) {
-            return url;
-        }
-        result = url.substring(0, i);
-        return result;
+    public List<String> getQueryParam(String name) {
+
+        return queryParams.get(name);
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+
+    public List<String> getHeaders() {
+
+        return headers;
+    }
+
+
+    public byte[] getBody() {
+
+        return body;
+    }
+
+    public void setBody(byte[] body) {
+
+        this.body = body;
+    }
+
+    public Map<String, List<String>> getQueryParams() {
+
+        return queryParams;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "method='" + method + '\'' +
+                ", path='" + path + '\'' +
+                ", queryParams=" + queryParams +
+                ", headers=" + headers +
+                ", body=" + Arrays.toString(body) +
+                ", in=" + in +
+                '}';
     }
 }
